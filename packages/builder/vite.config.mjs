@@ -25,7 +25,8 @@ const deferEntryModule = () => ({
   transformIndexHtml: {
     order: "post",
     handler(html) {
-      const scriptRe = /<script[^>]*type="module"[^>]*src="([^"]+)"[^>]*><\/script>/
+      const scriptRe =
+        /<script[^>]*type="module"[^>]*src="([^"]+)"[^>]*><\/script>/
       const match = html.match(scriptRe)
       if (!match) {
         return html

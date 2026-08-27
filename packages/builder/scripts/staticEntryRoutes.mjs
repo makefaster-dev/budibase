@@ -27,8 +27,7 @@ const STATIC_PATTERNS = [
 
 const source = fs.readFileSync(routesPath, "utf8")
 
-const dynamicImportRe =
-  /\(\) => import\('([^']+)'\)\.then\(m => m\.default\)/g
+const dynamicImportRe = /\(\) => import\('([^']+)'\)\.then\(m => m\.default\)/g
 
 const staticImports = new Map()
 const toIdentifier = file =>
