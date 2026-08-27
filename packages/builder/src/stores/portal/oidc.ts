@@ -1,6 +1,6 @@
 import { get } from "svelte/store"
 import { API } from "@/api"
-import { auth } from "@/stores/portal"
+import { auth } from "./auth"
 import { BudiStore } from "../BudiStore"
 import { PublicOIDCConfig } from "@budibase/types"
 

@@ -1,6 +1,6 @@
 import { API } from "@/api"
 import { BudiStore } from "@/stores/BudiStore"
-import { auth } from "@/stores/portal"
+import { auth } from "./auth"
 import { notifications } from "@budibase/bbui"
 import { FeatureFlag, FeatureFlags } from "@budibase/types"
 

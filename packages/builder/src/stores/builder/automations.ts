@@ -3484,8 +3484,16 @@ const generateContext = () => {
 
 /**
  * Generates a derived store acting as an evaluation context
- * for bindings in automations
+ * for bindings in automations.
+ *
+ * The inner store is created lazily on first subscription: creating it at
+ * module evaluation time reads the portal stores while the store module
+ * graph may still be initialising (a circular import), which throws a TDZ
+ * ReferenceError once the bundle is code-split.
  *
  * @returns {Readable<AutomationContext>}
  */
-export const evaluationContext: Readable<AutomationContext> = generateContext()
+export const evaluationContext: Readable<AutomationContext> = readable(
+  emptyContext,
+  set => generateContext().subscribe(set)
+)

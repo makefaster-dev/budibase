@@ -1,6 +1,6 @@
 import { get } from "svelte/store"
 import { API } from "@/api"
-import { licensing } from "@/stores/portal"
+import { licensing } from "./licensing"
 import { BudiStore } from "../BudiStore"
 import {
   CreateEnvironmentVariableRequest,
