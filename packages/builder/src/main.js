@@ -20,6 +20,12 @@ suppressWarnings([
   "received an unexpected slot",
 ])
 
+// Give the static boot shell in index.html a guaranteed painted frame before
+// mounting the app, so first paint is never gated on the bundle's execution
+await new Promise(resolve =>
+  requestAnimationFrame(() => requestAnimationFrame(resolve))
+)
+
 const app = mount(App, {
   target: document.getElementById("app"),
 })

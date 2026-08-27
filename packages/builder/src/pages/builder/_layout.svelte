@@ -286,6 +286,14 @@
     }
   }
 
+  // Remove the static boot shell from index.html once real content mounts,
+  // waiting a frame so the content below is painted before the shell goes
+  const removeBootShell = () => {
+    requestAnimationFrame(() => {
+      document.getElementById("boot-shell")?.remove()
+    })
+  }
+
   // Event handler for the command palette
   const handleKeyDown = e => {
     if (e.key === "k" && (e.ctrlKey || e.metaKey)) {
@@ -352,12 +360,12 @@
   <div class="loading"></div>
 {:then _}
   {#if $loaded || $admin.maintenance.length}
-    <div class="content">
+    <div class="content" use:removeBootShell>
       <slot />
     </div>
   {/if}
 {:catch error}
-  <div class="init page-error">
+  <div class="init page-error" use:removeBootShell>
     <Layout gap={"S"} alignContent={"center"} justifyItems={"center"}>
       <Heading size={"L"}>Oops...</Heading>
       <Body size={"S"}>There was a problem initialising the builder</Body>

@@ -54,6 +54,11 @@
           const color =
             themeBackgrounds[normalized] || themeBackgrounds[fallback]
           document.documentElement.style.backgroundColor = color
+          document.documentElement.style.setProperty("--boot-shell-bg", color)
+          document.documentElement.style.setProperty(
+            "--boot-shell-fg",
+            normalized === "light" ? "#222222" : "#e9e9e9"
+          )
         }
 
         const getStoredTheme = () => {
@@ -76,9 +81,46 @@
         setBackground(theme)
       })()
     </script>
+    <style>
+      /* Boot shell: painted from static HTML before the app bundle arrives,
+         removed by the root layout once real content renders */
+      #boot-shell {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: var(--boot-shell-bg, rgb(30, 30, 30));
+        color: var(--boot-shell-fg, #e9e9e9);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        z-index: 9999;
+        pointer-events: none;
+      }
+      #boot-shell img {
+        width: 48px;
+        height: 48px;
+      }
+      #boot-shell h1 {
+        font-size: 40px;
+        font-weight: 600;
+        margin: 0;
+        letter-spacing: -0.01em;
+      }
+    </style>
   </head>
 
   <body id="app">
+    <div id="boot-shell" aria-hidden="true">
+      <img src="/builder/bblogo.png" alt="" width="48" height="48" />
+      <h1>Budibase</h1>
+    </div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
