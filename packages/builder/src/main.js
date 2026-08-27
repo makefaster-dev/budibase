@@ -1,4 +1,3 @@
-import "remixicon/fonts/remixicon.css"
 import "@spectrum-css/vars/dist/spectrum-global.css"
 import "@spectrum-css/vars/dist/spectrum-medium.css"
 import "@spectrum-css/vars/dist/spectrum-darkest.css"
