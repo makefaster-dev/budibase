@@ -14,6 +14,37 @@ import zlib from "zlib"
 const COMPRESSIBLE = /\.(js|mjs|css|html|svg|json|txt|ttf|eot)$/
 const MIN_COMPRESS_SIZE = 1024
 
+// Start the entry module only after the first frame has painted, so the
+// static boot shell's first paint is never gated on the bundle's fetch or
+// evaluation. On constrained networks this matches the scheduling a
+// low-priority fetch would get anyway: render-critical CSS and fonts first,
+// then the bundle at full bandwidth.
+const deferEntryModule = () => ({
+  name: "defer-entry-module",
+  apply: "build",
+  transformIndexHtml: {
+    order: "post",
+    handler(html) {
+      const scriptRe = /<script[^>]*type="module"[^>]*src="([^"]+)"[^>]*><\/script>/
+      const match = html.match(scriptRe)
+      if (!match) {
+        return html
+      }
+      const src = match[1]
+      const loader =
+        `<script>requestAnimationFrame(function () {` +
+        `requestAnimationFrame(function () {` +
+        `var s = document.createElement("script");` +
+        `s.type = "module";` +
+        `s.crossOrigin = "";` +
+        `s.src = ${JSON.stringify(src)};` +
+        `document.body.appendChild(s);` +
+        `});});</script>`
+      return html.replace(scriptRe, loader)
+    },
+  },
+})
+
 const precompress = () => ({
   name: "precompress-static-assets",
   apply: "build",
@@ -166,7 +197,7 @@ export default defineConfig(({ mode }) => {
         "process.env.POSTHOG_TOKEN": JSON.stringify(process.env.POSTHOG_TOKEN),
       }),
       copyFonts("fonts"),
-      ...(isProduction ? [precompress()] : devOnlyPlugins),
+      ...(isProduction ? [deferEntryModule(), precompress()] : devOnlyPlugins),
     ],
     optimizeDeps: {
       // Let vite-plugin-svelte manage Svelte library prebundling
