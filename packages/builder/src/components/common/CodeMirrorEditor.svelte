@@ -26,7 +26,7 @@
 
 <script>
   import { Label } from "@budibase/bbui"
-  import CodeMirror from "@/components/integration/codemirror"
+  import { loadCodeMirror } from "@/components/integration/codemirror"
   import { themeStore } from "@/stores/portal"
   import { createEventDispatcher, onMount } from "svelte"
 
@@ -48,7 +48,11 @@
 
   // Creates an instance of a code mirror editor
   async function createEditor(mode, value) {
-    if (!CodeMirror || !textarea) {
+    if (!textarea) {
+      return
+    }
+    const CodeMirror = await loadCodeMirror()
+    if (!textarea) {
       return
     }
 

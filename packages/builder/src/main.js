@@ -1,4 +1,3 @@
-import "remixicon/fonts/remixicon.css"
 import "@spectrum-css/vars/dist/spectrum-global.css"
 import "@spectrum-css/vars/dist/spectrum-medium.css"
 import "@spectrum-css/vars/dist/spectrum-darkest.css"
@@ -19,6 +18,12 @@ suppressWarnings([
   "was created without expected prop",
   "received an unexpected slot",
 ])
+
+// Give the static boot shell in index.html a guaranteed painted frame before
+// mounting the app, so first paint is never gated on the bundle's execution
+await new Promise(resolve =>
+  requestAnimationFrame(() => requestAnimationFrame(resolve))
+)
 
 const app = mount(App, {
   target: document.getElementById("app"),

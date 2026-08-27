@@ -1,4 +1,5 @@
-import { aiConfigsStore, licensing } from "@/stores/portal"
+import { aiConfigsStore } from "./aiConfigs"
+import { licensing } from "./licensing"
 import { derived } from "svelte/store"
 import { DerivedBudiStore } from "../BudiStore"
 import { BUDIBASE_AI_PROVIDER_ID } from "@budibase/types"

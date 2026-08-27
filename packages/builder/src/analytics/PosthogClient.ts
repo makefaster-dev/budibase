@@ -1,17 +1,20 @@
-import posthog from "posthog-js"
+type Posthog = typeof import("posthog-js").default
 
 export default class PosthogClient {
   token: string
-  initialised: boolean
+  posthog?: Posthog
 
   constructor(token: string) {
     this.token = token
-    this.initialised = false
   }
 
-  init() {
-    if (!this.token) return
+  // The analytics SDK is only loaded once analytics are confirmed enabled,
+  // keeping it off the entry bundle's critical path. All capture methods
+  // no-op until it has loaded, mirroring the previous initialised guard.
+  async init() {
+    if (!this.token || this.posthog) return
 
+    const { default: posthog } = await import("posthog-js")
     posthog.init(this.token, {
       autocapture: false,
       capture_pageview: false,
@@ -20,7 +23,7 @@ export default class PosthogClient {
     })
     posthog.set_config({ persistence: "cookie" })
 
-    this.initialised = true
+    this.posthog = posthog
   }
 
   /**
@@ -28,9 +31,7 @@ export default class PosthogClient {
    * @param {String} id - unique user id
    */
   identify(id: string) {
-    if (!this.initialised) return
-
-    posthog.identify(id)
+    this.posthog?.identify(id)
   }
 
   /**
@@ -38,9 +39,7 @@ export default class PosthogClient {
    * @param {Object} meta - user fields
    */
   updateUser(meta: Record<string, any>) {
-    if (!this.initialised) return
-
-    posthog.people.set(meta)
+    this.posthog?.people.set(meta)
   }
 
   /**
@@ -49,19 +48,16 @@ export default class PosthogClient {
    * @param {Object} props - properties for the event
    */
   captureEvent(event: string, props: Record<string, any>) {
-    if (!this.initialised) {
+    if (!this.posthog) {
       return
     }
 
     props.sourceApp = "builder"
-    posthog.capture(event, props)
+    this.posthog.capture(event, props)
   }
 
   enableSessionRecording() {
-    if (!this.initialised) {
-      return
-    }
-    posthog.set_config({
+    this.posthog?.set_config({
       disable_session_recording: false,
     })
   }
@@ -70,8 +66,6 @@ export default class PosthogClient {
    * Reset posthog user back to initial state on logout.
    */
   logout() {
-    if (!this.initialised) return
-
-    posthog.reset()
+    this.posthog?.reset()
   }
 }

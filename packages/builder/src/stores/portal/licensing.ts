@@ -1,6 +1,7 @@
 import { API } from "@/api"
 import { StripeStatus } from "@/components/portal/licensing/constants"
-import { admin, auth } from "@/stores/portal"
+import { admin } from "./admin"
+import { auth } from "./auth"
 import { Constants } from "@budibase/frontend-core"
 import { helpers } from "@budibase/shared-core"
 import { bb } from "@/stores/bb"

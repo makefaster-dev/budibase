@@ -1,5 +1,6 @@
 import { API } from "@/api"
-import { auth, licensing } from "@/stores/portal"
+import { auth } from "./auth"
+import { licensing } from "./licensing"
 import { sdk } from "@budibase/shared-core"
 import { UserGroup } from "@budibase/types"
 import { get } from "svelte/store"
