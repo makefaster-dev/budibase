@@ -23,7 +23,6 @@
   import { API } from "@/api"
   import Branding from "./Branding.svelte"
   import ContextMenu from "@/components/ContextMenu.svelte"
-  import CommandPalette from "@/components/commandPalette/CommandPalette.svelte"
   import {
     Modal,
     notifications,
@@ -32,8 +31,17 @@
     Body,
     Button,
   } from "@budibase/bbui"
-  import SettingsModal from "@/components/settings/SettingsModal.svelte"
   import AccountLockedModal from "@/components/portal/licensing/AccountLockedModal.svelte"
+
+  // The settings modal and command palette pull in the whole settings surface
+  // (routes, pages and their editors); importing them lazily keeps that off
+  // the entry bundle and out of the render-blocking entry stylesheet
+  const settingsModalImport = import(
+    "@/components/settings/SettingsModal.svelte"
+  )
+  const commandPaletteImport = import(
+    "@/components/commandPalette/CommandPalette.svelte"
+  )
   import { writable } from "svelte/store"
 
   $isActive
@@ -345,7 +353,13 @@
 />
 
 <!-- Global settings modal -->
-<SettingsModal bind:this={settingsModal} on:hide={() => bb.hideSettings()} />
+{#await settingsModalImport then settingsModalModule}
+  <svelte:component
+    this={settingsModalModule.default}
+    bind:this={settingsModal}
+    on:hide={() => bb.hideSettings()}
+  />
+{/await}
 
 <!-- Portal branding overrides -->
 <Branding />
@@ -353,7 +367,9 @@
 
 <svelte:window on:keydown={handleKeyDown} />
 <Modal bind:this={commandPaletteModal} zIndex={999999}>
-  <CommandPalette />
+  {#await commandPaletteImport then commandPaletteModule}
+    <svelte:component this={commandPaletteModule.default} />
+  {/await}
 </Modal>
 
 {#await initPromise}
