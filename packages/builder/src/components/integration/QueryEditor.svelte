@@ -1,5 +1,5 @@
 <script>
-  import CodeMirror from "./codemirror"
+  import { loadCodeMirror } from "./codemirror"
   import { Label } from "@budibase/bbui"
   import { onMount, createEventDispatcher } from "svelte"
   import { themeStore } from "@/stores/portal"
@@ -105,7 +105,9 @@
   let first = true
 
   async function createEditor(mode) {
-    if (destroyed || !CodeMirror) return
+    if (destroyed) return
+    const CodeMirror = await loadCodeMirror()
+    if (destroyed) return
 
     if (editor) editor.toTextArea()
 
